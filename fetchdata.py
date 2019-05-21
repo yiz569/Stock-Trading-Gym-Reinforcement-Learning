@@ -29,7 +29,7 @@ while True:
     if ticker.isdigit():
         print("Invalid entry: a stock ticker only uses characters - integers or symbols are not permitted")
     else:
-        pull = requests.get("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + ticker + "&outputsize=full&apikey=" + apikey)
+        pull = requests.get("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=" + ticker + "&outputsize=full&apikey=" + apikey)
         
         if "Error" in pull.text:
             print("Error: stock either cannot be found or is not listed on Alpha Vantage - please enter another stock ticker")
@@ -47,7 +47,7 @@ d = time.strftime("%I")
 e = time.strftime("%M")
 f = time.strftime("%p")
 
-t,opn,h,l,close,vol = [],[],[],[],[],[]
+t,opn,h,l,close,adj_close,vol,div = [],[],[],[],[],[],[],[]
 
 #adds values pulled from Alpha Vantage
 for lx, value in j["Time Series (Daily)"].items():
@@ -60,8 +60,12 @@ for lx, value in j["Time Series (Daily)"].items():
     l.append(float(value["3. low"]))
     
     close.append(float(value["4. close"]))
+
+    adj_close.append(float(value["5. adjusted close"]))
     
-    vol.append(float(value["5. volume"]))
+    vol.append(float(value["6. volume"]))
+
+    div.append(float(value["7. dividend amount"]))
 
 print(" ")
 print("--------------------------------------------------- ")
@@ -80,7 +84,7 @@ print(" ")
 #data headers are formatted in order to be put into a CSV
 output = pd.DataFrame(
     {
-        "Date":t, "Open":opn, "High": h, "Low":l, "Close":close, "Volume": vol,
+        "Date":t, "Open":opn, "High": h, "Low":l, "Close":close, "Adjusted_Close":adj_close, "Volume": vol, "Dividends": div 
     }
 )
 
